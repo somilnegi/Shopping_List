@@ -1,7 +1,9 @@
 const itemForm = document.getElementById('item-form');
 const itemInput = document.getElementById('item-input');
 const itemList = document.getElementById('item-list');
+const clearButton = document.getElementById('clear');
 
+// ADD ITEMS TO THE LIST 
 function addItem(e) {
     e.preventDefault();
     
@@ -40,5 +42,22 @@ function createIcon(classes){
     return icon;
 }
 
+// REMOVE AND CLEAR ITEM/ITEMS 
+function removeItem(e){
+    if(e.target.parentElement.classList.contains('remove-item')){
+        e.target.parentElement.parentElement.remove();
+    }
+}
+
+function clearItems(){
+    // itemList.innerHTML='';
+    while(itemList.firstChild){
+        itemList.removeChild(itemList.firstChild);
+    }
+
+}
+
 // Event Listeners
 itemForm.addEventListener('submit', addItem);
+itemList.addEventListener('click', removeItem);
+clearButton.addEventListener('click', clearItems);
