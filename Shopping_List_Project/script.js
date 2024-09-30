@@ -3,6 +3,8 @@ const itemInput = document.getElementById('item-input');
 const itemList = document.getElementById('item-list');
 const clearButton = document.getElementById('clear');
 const itemFilter = document.getElementById('filter');
+const formBtn = itemForm.querySelector('button');
+let isEditMode = false;
 
 function displayItems(){
     const itemsFromStorage = getItemsFromStorage();
@@ -20,6 +22,22 @@ function onAddItemSubmit(e) {
     if(newItem === '') {
         alert('Please add an item'); 
         return;
+    }
+
+    // Check for edit mode
+    if(isEditMode){
+        const itemToEdit = itemList.querySelector('.edit-mode');
+
+        removeItemFromStorage(itemToEdit.textContent);
+        itemToEdit.classList.remove('edit-mode');
+        itemToEdit.remove();
+        isEditMode=false;
+    }
+    else{
+        if(checkIfItemExist(newItem)){
+            alert('This item already exists!');
+            return;
+        }
     }
     
     // Create item DOM element
@@ -86,6 +104,35 @@ function onClickItem(e){
     if(e.target.parentElement.classList.contains('remove-item')){
         removeItem(e.target.parentElement.parentElement);
     }
+    else{
+        setItemToEdit(e.target);
+    }
+}
+
+// PREVENT DUPLICATES
+function checkIfItemExist(item){
+    let itemsFromStorage = getItemsFromStorage();
+    itemsFromStorage = itemsFromStorage.map( item => item.toLowerCase());
+    // if(itemsFromStorage.includes(item)){
+    //     return true;
+    // }
+    // else{
+    //     return false;
+    // }
+    return itemsFromStorage.includes(item.toLowerCase());
+
+}
+
+// Edit items
+function setItemToEdit(item){
+    isEditMode = true;
+
+    itemList.querySelectorAll('li').forEach(i => i.classList.remove('edit-mode'));
+    // item.style.color = '#ccc';
+    item.classList.add('edit-mode');
+    formBtn.innerHTML = '<i class = "fa-solid fa-pen"></i> Update Item';
+    itemInput.value = item.textContent;
+    formBtn.style.backgroundColor = '#228B22'
 }
 
 function removeItem(item){
@@ -140,6 +187,8 @@ function filterItems(e){
 }
 
 function checkUI(){
+    itemInput.value = '';
+
     const items = itemList.querySelectorAll('li');
 
     // console.log(items);
@@ -151,6 +200,10 @@ function checkUI(){
         clearButton.style.display = 'block';
         itemFilter.style.display = 'block';
     }
+
+    formBtn.innerHTML = '<i class = "fa-solid fa-plus"></i> Add Item';
+    formBtn.style.backgroundColor = '#333';
+    isEditMode = false;
 }
 
 // Initialize app
